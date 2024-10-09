@@ -1,0 +1,23 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-img src="https://i.postimg.cc/Twwyf31C/logo1.png" alt="logo hombre con pesas"></ion-img>
+
+  <div class="ion-margin-top">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <ion-input label="Email" label-placement="floating"
+                 placeholder="tuemail@mail.com" formControlName="email"></ion-input>
+      <ion-input label="Clave" type="password" formControlName="pass">
+        <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+      </ion-input>
+      <div class="ion-margin-top center-container">
+        <ion-button [disabled]="!loginForm.valid" type="submit" shape="round">Ingresar</ion-button>
+        <ion-button routerLink="/registro" shape="round" fill="outline">Registrarse</ion-button>
+      </div>
+    </form>
+  </div>
+</ion-content>

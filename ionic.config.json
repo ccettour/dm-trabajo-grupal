@@ -1,0 +1,7 @@
+{
+  "name": "trabajo-practico",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

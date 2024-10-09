@@ -1,0 +1,74 @@
+<ion-menu contentId="main-content" side="end">
+  <ion-header>
+    <ion-toolbar color="tertiary">
+      <ion-title>Menu</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-button expand="block" routerLink="/perfil">Perfil</ion-button>
+  </ion-content>
+</ion-menu>
+
+<ion-content class="ion-page" id="main-content">
+  <ion-header>
+    <ion-toolbar color="primary">
+      <ion-buttons slot="end">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-title> GymTonic</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <div id="container">
+      <ion-img
+        src="https://img.freepik.com/foto-gratis/joven-ropa-deportiva-clase-ejercicios-gimnasio_1150-12372.jpg"
+        alt="Hombre en gimnasio"
+      ></ion-img>
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Rutina semanal</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            <ion-item>
+              <ion-thumbnail slot="start">
+                <img alt="ejercicios para pecho" src="assets/card-days/dia1.jpg"/>
+              </ion-thumbnail>
+              <ion-label>Día 1: pecho</ion-label>
+            </ion-item>
+
+            <ion-item>
+              <ion-thumbnail slot="start">
+                <img alt="ejercicios para abdomen" src="assets/card-days/dia2.jpg"/>
+              </ion-thumbnail>
+              <ion-label>Día 2: abdomen</ion-label>
+            </ion-item>
+
+            <ion-item>
+              <ion-thumbnail slot="start">
+                <img alt="ejercicios para piernas" src="assets/card-days/dia3.jpg"/>
+              </ion-thumbnail>
+              <ion-label>Día 3: piernas</ion-label>
+            </ion-item>
+
+            <ion-item>
+              <ion-thumbnail slot="start">
+                <img alt="ejercicios para espalda" src="assets/card-days/dia4.jpg"/>
+              </ion-thumbnail>
+              <ion-label>Día 4: espalda</ion-label>
+            </ion-item>
+
+            <ion-item lines="none">
+              <ion-thumbnail slot="start">
+                <img alt="ejercicios para brazos" src="assets/card-days/dia5.jpg"/>
+              </ion-thumbnail>
+              <ion-label>Día 5: brazos</ion-label>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+  </ion-content>
+</ion-content>

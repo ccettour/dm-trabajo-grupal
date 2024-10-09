@@ -1,0 +1,26 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Registro</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <form [formGroup]="registroForm" (ngSubmit)="onSubmit()">
+    <ion-input label="Nombre" label-placement="floating" placeholder="Juan" formControlName="nombre"></ion-input>
+    <ion-input label="Apellido" label-placement="floating" placeholder="Pérez" formControlName="apellido"></ion-input>
+    <ion-input label="Email" label-placement="floating" placeholder="tuemail@mail.com" formControlName="email"></ion-input>
+    <ion-input label="Clave" type="password" formControlName="pass">
+      <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+    </ion-input>
+    <ion-input label="Repetir clave" type="password" formControlName="repeatPass">
+      <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+    </ion-input>
+    <div class="ion-margin-top center-container">
+      <ion-button [disabled]="!registroForm.valid" type="submit" shape="round">Registrarse</ion-button>
+    </div>
+  </form>
+</ion-content>

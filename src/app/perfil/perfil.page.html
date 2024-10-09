@@ -1,0 +1,30 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Mi perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+    <div class="center-container ion-padding-bottom">
+      <ion-avatar (click)="fileInput.click()">
+        <img [src]="avatarUrl || '/assets/avatar.jpg'" alt="Avatar"/>
+        <div class="edit-icon">
+          <ion-icon name="pencil"></ion-icon>
+        </div>
+      </ion-avatar>
+      <input type="file" #fileInput (change)="onFileChange($event)" style="display: none;"/>
+    </div>
+
+    <ion-input label="Nombre" label-placement="floating" placeholder="Juan" formControlName="nombre"></ion-input>
+    <ion-input label="Apellido" label-placement="floating" placeholder="Pérez" formControlName="apellido"></ion-input>
+    <ion-input label="Email" label-placement="floating" placeholder="tuemail@mail.com" formControlName="email"></ion-input>
+
+    <div class="center-container ion-padding-top">
+      <ion-button [disabled]="!profileForm.valid" type="submit">Actualizar</ion-button>
+    </div>
+  </form>
+</ion-content>
