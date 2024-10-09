@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'trabajo-practico',
+  appId: 'tp.int.caminapp',
+  appName: 'caminapp',
   webDir: 'www'
 };
 

@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">trabajo-practico</string>
     <string name="title_activity_main">trabajo-practico</string>
-    <string name="package_name">io.ionic.starter</string>
-    <string name="custom_url_scheme">io.ionic.starter</string>
+    <string name="package_name">tp.int.caminapp</string>
+    <string name="custom_url_scheme">tp.int.caminapp</string>
 </resources>
