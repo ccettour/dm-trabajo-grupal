@@ -1,4 +1,4 @@
-package tp.int.caminapp;
+package tp.integ.caminapp;
 
 import com.getcapacitor.BridgeActivity;
 

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "804715829569",
+    "project_id": "tpintegrador-a14d3",
+    "storage_bucket": "tpintegrador-a14d3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:804715829569:android:7f5be1ef57f9ef829a69c0",
+        "android_client_info": {
+          "package_name": "tp.caminapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDY0uoFQB7uAdNB4T0QXVEn_ANRG8ZBC-o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
