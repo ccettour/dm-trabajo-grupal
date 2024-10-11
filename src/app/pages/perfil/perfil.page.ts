@@ -31,7 +31,7 @@ export class PerfilPage implements OnInit {
   profileForm: FormGroup = new FormGroup({
     nombre: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required, Validators.email]),
-    avatar: new FormControl('', [Validators.required]),
+    avatar: new FormControl(''),
   });
 
   async ngOnInit() {
