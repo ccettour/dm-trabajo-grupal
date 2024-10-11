@@ -4,6 +4,7 @@ import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} fr
 import {IonButton, IonButtons, IonContent, IonHeader, IonImg, IonInput, IonInputPasswordToggle,
   IonRouterLink, IonTitle, IonToolbar, ToastController} from '@ionic/angular/standalone';
 import {Router, RouterLink} from "@angular/router";
+import {AuthService} from "../../services/auth/auth.service";
 
 @Component({
   selector: 'app-login',
@@ -13,42 +14,34 @@ import {Router, RouterLink} from "@angular/router";
   imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButton, IonRouterLink, RouterLink,
     ReactiveFormsModule, IonInput, IonInputPasswordToggle, IonButtons, IonImg]
 })
-export class LoginPage implements OnInit {
+export class LoginPage{
 
   loginForm: FormGroup = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
     pass: new FormControl('', [Validators.required]),
   });
 
-  constructor(private router: Router, private toastController: ToastController) { }
+  constructor(
+    private router: Router,
+    private toastController: ToastController,
+    private authService: AuthService
+  ) { }
 
-  ngOnInit() {
-    console.log('ngOnInit');
-  }
+  async onSubmit(){
+    const valores = this.loginForm.value;
 
-  user={
-    "email": "admin@mail.com",
-    "pass": "admin123",
-  }
-
-  onSubmit(){
-    console.log(this.loginForm.value);
-    const email = this.loginForm.get('email')?.value;
-    const pass = this.loginForm.get('pass')?.value;
-
-    if(email.toLowerCase()!==this.user.email){
-      this.errorMessage("El email no está registrado");
-    } else if(email.toLowerCase()===this.user.email && pass===this.user.pass){
-      this.router.navigate(['/home'])
-    } else {
-      this.errorMessage("Email y/o clave incorrecto");
+    try{
+      await this.authService.inicioConEmailYPass(valores);
+      await this.router.navigate(['/home']);
+    }catch(error){
+      await this.errorMessage("Email y/o clave incorrecto");
     }
   }
 
   async errorMessage(contenido: string) {
     const mensaje = await this.toastController.create({
       message: contenido,
-      duration: 2000,
+      duration: 3000,
       color: 'danger',
       position: 'bottom'
     });

@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "tp.int.caminapp"
+    namespace "tp.caminapp"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "tp.int.caminapp"
+        applicationId "tp.caminapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
