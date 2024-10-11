@@ -6,6 +6,7 @@ import { IonAvatar, IonBackButton, IonButton, IonButtons, IonContent, IonHeader,
 import {Router} from "@angular/router";
 import {addIcons} from "ionicons";
 import {pencil} from 'ionicons/icons';
+import {AuthService} from "../../services/auth/auth.service";
 
 @Component({
   selector: 'app-perfil',
@@ -17,36 +18,41 @@ import {pencil} from 'ionicons/icons';
 })
 export class PerfilPage implements OnInit {
 
-  constructor(private router: Router, private toastController: ToastController) {
+  constructor(
+    private router: Router,
+    private toastController: ToastController,
+    private authService: AuthService,
+  ) {
     addIcons({pencil});
   }
-  avatarUrl: string | ArrayBuffer | null | undefined = '/assets/avatar.jpg';
 
-  user={
-    "nombre": "Juan",
-    "apellido": "Pérez",
-    "email": "admin@mail.com",
-    "avatar": "/assets/avatar.jpg"
-  }
+  avatarUrl: string | ArrayBuffer | null | undefined = '/assets/avatar.jpg';
 
   profileForm: FormGroup = new FormGroup({
     nombre: new FormControl('', [Validators.required]),
-    apellido: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required, Validators.email]),
     avatar: new FormControl('', [Validators.required]),
   });
 
-  ngOnInit() {
-    this.profileForm.setValue({
-      nombre: this.user.nombre,
-      apellido: this.user.apellido,
-      email: this.user.email,
-      avatar: this.user.avatar,
-    })
+  async ngOnInit() {
+    await this.cargarDatosUsuario();
   }
 
-  onSubmit(){
-    this.errorMessage("Perfil actualizado","success");
+  async cargarDatosUsuario() {
+    await this.authService.datosUsuario();
+    const usuario = this.authService.usuarioLogueado;
+
+    if (usuario) {
+      this.profileForm.patchValue({
+        email: usuario.email,
+      });
+    }
+  }
+
+  async onSubmit(){
+
+    await this.errorMessage("Perfil actualizado","success");
+    await this.router.navigate(['/home']);
   }
 
   onFileChange(event: Event) {
@@ -70,6 +76,6 @@ export class PerfilPage implements OnInit {
       color: color,
       position: 'bottom'
     });
-    mensaje.present();
+    await mensaje.present();
   }
 }
