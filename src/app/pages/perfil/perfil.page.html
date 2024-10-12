@@ -10,13 +10,12 @@
 <ion-content [fullscreen]="true" class="ion-padding">
   <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
     <div class="center-container ion-padding-bottom">
-      <ion-avatar (click)="fileInput.click()">
-        <img [src]="avatarUrl || '/assets/avatar.jpg'" alt="Avatar"/>
-        <div class="edit-icon">
+      <ion-avatar>
+        <img [src]="avatarUrl || '/assets/avatar.jpg'" alt="Avatar" />
+        <div class="edit-icon" (click)="presentActionSheet()">
           <ion-icon name="pencil"></ion-icon>
         </div>
       </ion-avatar>
-      <input type="file" #fileInput (change)="onFileChange($event)" style="display: none;"/>
     </div>
 
     <ion-input label="Nombre" label-placement="floating" placeholder="Juan" formControlName="nombre"></ion-input>
