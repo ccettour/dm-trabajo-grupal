@@ -5,13 +5,9 @@ import { IonAvatar, IonBackButton, IonButton, IonButtons, IonContent, IonHeader,
   IonInputPasswordToggle, IonLabel, IonTitle, IonToolbar, ToastController,IonImg, ActionSheetController } from '@ionic/angular/standalone';
 import {Router} from "@angular/router";
 import {addIcons} from "ionicons";
-<<<<<<< Updated upstream:src/app/pages/perfil/perfil.page.ts
-import {pencil} from 'ionicons/icons';
-import {AuthService} from "../../services/auth/auth.service";
-=======
 import {add, camera, cameraOutline, image, imageOutline, pencil} from 'ionicons/icons';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
->>>>>>> Stashed changes:src/app/perfil/perfil.page.ts
+import { AuthService } from 'src/app/services/auth/auth.service';
 
 @Component({
   selector: 'app-perfil',
@@ -23,19 +19,11 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 })
 export class PerfilPage implements OnInit {
 
-<<<<<<< Updated upstream:src/app/pages/perfil/perfil.page.ts
-  constructor(
-    private router: Router,
-    private toastController: ToastController,
-    private authService: AuthService,
-  ) {
-    addIcons({pencil});
-=======
   images: string[] = []
 
-  constructor(private router: Router, private toastController: ToastController,private actionSheetController: ActionSheetController) {
+  constructor(private router: Router, private toastController: ToastController,private actionSheetController: ActionSheetController, 
+    private authService:AuthService) {
     addIcons({pencil,cameraOutline,imageOutline,add,camera,image});
->>>>>>> Stashed changes:src/app/perfil/perfil.page.ts
   }
 
   avatarUrl: string | ArrayBuffer | null | undefined = '/assets/avatar.jpg';
