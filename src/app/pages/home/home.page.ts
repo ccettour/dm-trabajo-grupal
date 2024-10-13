@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonRouterLink, IonMenu, IonMenuButton, Platform, IonButtons,
   IonImg, IonItem, IonThumbnail, IonLabel, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonList, IonFooter
@@ -14,7 +14,7 @@ import {AuthService} from "../../services/auth/auth.service";
   imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonRouterLink, RouterLink, IonMenu, IonMenuButton,
     IonButtons, IonImg, IonItem, IonThumbnail, IonLabel, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonList, IonFooter],
 })
-export class HomePage implements OnInit {
+export class HomePage {
   private backButtonSubscription: any;
 
   constructor(
@@ -22,10 +22,6 @@ export class HomePage implements OnInit {
     private platform: Platform,
     private authService: AuthService
   ) {
-  }
-
-  ngOnInit() {
-    console.log('onInit');
   }
 
   ionViewDidEnter() {

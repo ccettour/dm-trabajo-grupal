@@ -1,13 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule,NgOptimizedImage } from '@angular/common';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import { IonAvatar, IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonInput,
-  IonInputPasswordToggle, IonLabel, IonTitle, IonToolbar, ToastController,IonImg, ActionSheetController } from '@ionic/angular/standalone';
+import {
+  IonAvatar, IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonInput,
+  IonInputPasswordToggle, IonLabel, IonTitle, IonToolbar, ToastController, IonImg, ActionSheetController, IonLoading
+} from '@ionic/angular/standalone';
 import {Router} from "@angular/router";
 import {addIcons} from "ionicons";
-import {add, camera, cameraOutline, image, imageOutline, pencil} from 'ionicons/icons';
+import {add, camera, cameraOutline, closeOutline, image, imageOutline, pencil} from 'ionicons/icons';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { AuthService } from 'src/app/services/auth/auth.service';
+import { PerfilService } from 'src/app/services/perfil/perfil.service'; // Servicio para interactuar con Firestore
+import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-perfil',
@@ -15,54 +19,101 @@ import { AuthService } from 'src/app/services/auth/auth.service';
   styleUrls: ['./perfil.page.scss'],
   standalone: true,
   imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonBackButton, IonButtons,
-    IonButton, IonInput, IonInputPasswordToggle, ReactiveFormsModule, IonAvatar, IonLabel, IonIcon,IonImg,NgOptimizedImage]
+    IonButton, IonInput, IonInputPasswordToggle, ReactiveFormsModule, IonAvatar, IonLabel, IonIcon, IonImg, NgOptimizedImage, IonLoading]
 })
 export class PerfilPage implements OnInit {
-
   images: string[] = []
-
-  constructor(private router: Router, private toastController: ToastController,private actionSheetController: ActionSheetController, 
-    private authService:AuthService) {
-    addIcons({pencil,cameraOutline,imageOutline,add,camera,image});
-  }
 
   avatarUrl: string | ArrayBuffer | null | undefined = '/assets/avatar.jpg';
 
   profileForm: FormGroup = new FormGroup({
     nombre: new FormControl('', [Validators.required]),
+    estatura: new FormControl(''),
+    peso: new FormControl(''),
     email: new FormControl('', [Validators.required, Validators.email]),
-    avatar: new FormControl(''),
+    avatar: new FormControl('', [Validators.required]),
   });
+
+  userId: string | undefined;
+
+  constructor(
+    private router: Router,
+    private toastController: ToastController,
+    private actionSheetController: ActionSheetController,
+    private authService:AuthService,
+    private perfilService: PerfilService,
+    private loadingController: LoadingController
+  ) {
+    addIcons({pencil,cameraOutline,imageOutline,add,camera,image, closeOutline});
+  }
 
   async ngOnInit() {
     await this.cargarDatosUsuario();
   }
 
   async cargarDatosUsuario() {
-    await this.authService.datosUsuario();
-    const usuario = this.authService.usuarioLogueado;
+    this.authService.getDatosUsuario().subscribe(async (usuario) => {
+      if (usuario) {
+        this.userId = usuario.uid;
 
-    if (usuario) {
-      this.profileForm.patchValue({
-        email: usuario.email,
-      });
+        // Se cargan los datos desde Firestore
+        const userProfile = await this.perfilService.obtenerDatosPerfil(this.userId);
+        if (userProfile) {
+          this.profileForm.patchValue({
+            nombre: userProfile.nombre,
+            estatura: userProfile.estatura,
+            peso: userProfile.peso,
+            email: userProfile.email,
+            avatar: userProfile.avatarUrl
+          });
+          this.avatarUrl = userProfile.avatarUrl || this.avatarUrl;
+        }
+      } else {
+        console.error('Usuario no autenticado');
+        await this.router.navigate(['/login']);
+      }
+    });
+  }
+
+  async onSubmit() {
+    const loading: HTMLIonLoadingElement = await this.loadingController.create({
+      message: 'Actualizando...',
+      spinner: 'crescent',
+    });
+    await loading.present();
+
+    if (this.profileForm.valid && this.userId) {
+      const profileData = {
+        nombre: this.profileForm.value.nombre,
+        estatura: this.profileForm.value.estatura,
+        peso: this.profileForm.value.peso,
+        avatarUrl: this.avatarUrl
+      };
+
+      try {
+        await this.perfilService.actualizarPerfil(this.userId, profileData);
+        await this.toastMessage("Perfil actualizado", "success");
+        await this.router.navigate(['/home']);
+      } catch (err) {
+        console.error('Error al actualizar perfil', err);
+        await this.toastMessage('Error al actualizar perfil', 'danger');
+      } finally {
+        await loading.dismiss();
+      }
+    } else {
+      await loading.dismiss();
+      await this.toastMessage('Formulario inválido o usuario no autenticado', 'warning');
     }
   }
 
-  async onSubmit(){
-
-    await this.errorMessage("Perfil actualizado","success");
-    await this.router.navigate(['/home']);
-  }
-
   async presentActionSheet() {
-    const actionSheet = await this.actionSheetController.create({
+    const actionSheet: HTMLIonActionSheetElement = await this.actionSheetController.create({
       header: 'Selecciona una opción',
       buttons: [
         {
           text: 'Tomar una foto',
           icon: camera,
-          cssClass: 'action-sheet-button', 
+          cssClass: 'action-sheet-button',
           handler: () => {
             this.openCamera();
           }
@@ -70,14 +121,14 @@ export class PerfilPage implements OnInit {
         {
           text: 'Seleccionar de la galería',
           icon: image,
-          cssClass: 'action-sheet-button', 
+          cssClass: 'action-sheet-button',
           handler: () => {
-            this.openCameraRoll(); 
+            this.openCameraRoll();
           }
         },
         {
           text: 'Cancelar',
-          icon: 'close',
+          icon: closeOutline,
           role: 'cancel'
         }
       ]
@@ -114,21 +165,7 @@ async openCameraRoll() {
     }
   }
 
-  /*onFileChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      const file = input.files[0];
-      const reader = new FileReader();
-
-      reader.onload = (e: ProgressEvent<FileReader>) => {
-        this.avatarUrl = e.target?.result;
-      };
-
-      reader.readAsDataURL(file);
-    }
-  }*/
-
-  async errorMessage(contenido: string, color: string) {
+  async toastMessage(contenido: string, color: string) {
     const mensaje = await this.toastController.create({
       message: contenido,
       duration: 2000,
