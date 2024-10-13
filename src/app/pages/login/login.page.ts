@@ -41,7 +41,7 @@ export class LoginPage{
   async errorMessage(contenido: string) {
     const mensaje = await this.toastController.create({
       message: contenido,
-      duration: 3000,
+      duration: 2000,
       color: 'danger',
       position: 'bottom'
     });

@@ -19,13 +19,7 @@
       <ion-input-password-toggle slot="end"></ion-input-password-toggle>
     </ion-input>
     <div class="ion-margin-top center-container">
-      <ion-button [disabled]="!registroForm.valid || loading" type="submit" shape="round">Registrarse</ion-button>
+      <ion-button [disabled]="!registroForm.valid" type="submit" shape="round">Registrarse</ion-button>
     </div>
   </form>
-
-  <ion-loading
-    [isOpen]="loading"
-    message="Registrando..."
-    spinner="crescent">
-  </ion-loading>
 </ion-content>

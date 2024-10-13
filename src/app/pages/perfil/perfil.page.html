@@ -19,10 +19,12 @@
     </div>
 
     <ion-input label="Nombre" label-placement="floating" placeholder="Juan" formControlName="nombre"></ion-input>
-    <ion-input label="Email" label-placement="floating" placeholder="tuemail@mail.com" formControlName="email"></ion-input>
+    <ion-input label="Estatura" label-placement="floating" formControlName="estatura"></ion-input>
+    <ion-input label="Peso" label-placement="floating" formControlName="peso"></ion-input>
+    <ion-input label="Email" label-placement="floating" formControlName="email" id="email" [readonly]="true"></ion-input>
 
     <div class="center-container ion-padding-top">
-      <ion-button [disabled]="!profileForm.valid" type="submit">Actualizar</ion-button>
+      <ion-button [disabled]="!profileForm.valid" type="submit" shape="round">Actualizar</ion-button>
     </div>
   </form>
 </ion-content>

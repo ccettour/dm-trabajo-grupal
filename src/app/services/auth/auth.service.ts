@@ -1,36 +1,35 @@
 import { Injectable } from '@angular/core';
-import {FirebaseAuthentication} from "@capacitor-firebase/authentication";
+import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, User } from '@angular/fire/auth';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  usuarioLogueado:any;
+  private usuarioLogueadoSubject: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
+  public usuarioLogueado$: Observable<User | null> = this.usuarioLogueadoSubject.asObservable();
 
-  constructor() { }
+  constructor(private auth: Auth) {
+    onAuthStateChanged(this.auth, (user) => {
+      this.usuarioLogueadoSubject.next(user);
+    });
+  }
 
-  async registroConEmail(params: { email: string, pass: string }): Promise<any>  {
-    const res = await FirebaseAuthentication.createUserWithEmailAndPassword({email: params.email, password: params.pass});
+  async registroConEmail(params: { email: string, pass: string }): Promise<User | null>  {
+    const res = await createUserWithEmailAndPassword(this.auth, params.email, params.pass);
     return res.user;
   }
 
-  async inicioConEmailYPass(params: { email: string, pass: string }): Promise<any> {
-    const res = await FirebaseAuthentication.signInWithEmailAndPassword({email: params.email, password: params.pass});
+  async inicioConEmailYPass(params: { email: string, pass: string }): Promise<User | null> {
+    const res = await signInWithEmailAndPassword(this.auth, params.email, params.pass);
     return res.user;
   }
 
-  async datosUsuario(){
-    const usuario = await FirebaseAuthentication.getCurrentUser();
-    if(usuario){
-      this.usuarioLogueado = {
-        email: usuario.user?.email,
-        uid: usuario.user?.uid
-      };
-    }
-    console.log(this.usuarioLogueado);
+  getDatosUsuario(): Observable<User | null> {
+    return this.usuarioLogueado$;
   }
 
-  async cerrarSesion(): Promise<void>{
-    await FirebaseAuthentication.signOut();
+  async cerrarSesion(): Promise<void> {
+    await signOut(this.auth);
   }
 }

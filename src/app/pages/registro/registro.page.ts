@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {
@@ -7,6 +7,8 @@ import {
 } from '@ionic/angular/standalone';
 import {Router, RouterLink} from "@angular/router";
 import {AuthService} from "../../services/auth/auth.service";
+import { PerfilService } from 'src/app/services/perfil/perfil.service';
+import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-registro',
@@ -21,11 +23,11 @@ export class RegistroPage {
   constructor(
     private router: Router,
     private toastController: ToastController,
-    private authService: AuthService
+    private authService: AuthService,
+    private perfilService: PerfilService,
+    private loadingController: LoadingController
     ) {
   }
-
-  loading = false;
 
   registroForm: FormGroup = new FormGroup({
     nombre: new FormControl('', [Validators.required]),
@@ -35,25 +37,45 @@ export class RegistroPage {
   });
 
   async onSubmit() {
-    this.loading = true;
+    const loading = await this.loadingController.create({
+      message: 'Registrando...',
+      spinner: 'crescent',
+    });
+    await loading.present();
 
     const pass = this.registroForm.get('pass')?.value;
-    const repeatPass = this.registroForm.get('repeatPass')?.value
+    const repeatPass = this.registroForm.get('repeatPass')?.value;
 
     const valores = this.registroForm.value;
 
     if (pass !== repeatPass) {
-      this.loading = false;
-      await this.errorMessage("Las claves no coinciden", "danger")
+      await this.errorMessage("Las claves no coinciden", "danger");
+      await loading.dismiss();
     } else {
       try{
         const usuario = await this.authService.registroConEmail(valores);
-        this.loading = false;
         await this.errorMessage("Usuario creado", "success");
-        await this.router.navigate(['/login'])
-      } catch (error) {
-        this.loading = false;
-        await this.errorMessage("Error al crear el usuario", "danger")
+        if(usuario){
+          const userId=usuario?.uid
+          const datos = {
+            nombre: this.registroForm.get('nombre')?.value,
+            email: this.registroForm.get('email')?.value,
+            avatarUrl: '/assets/avatar.jpg'
+          };
+          await this.perfilService.actualizarPerfil(userId, datos);
+        }
+
+        await this.router.navigate(['/login']);
+      } catch (error:any) {
+        if (error.code === 'auth/email-already-in-use') {
+          await this.errorMessage("El mail ya existe. Intente con otro.", "danger");
+        } else if(error.code === 'auth/weak-password'){
+          await this.errorMessage("La contraseña no es segura. Intente con otra.", "danger");
+        } else{
+          await this.errorMessage("Error al crear la cuenta.", "danger")
+        }
+      } finally {
+        await loading.dismiss();
       }
     }
   }
