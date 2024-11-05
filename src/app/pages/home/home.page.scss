@@ -20,3 +20,19 @@
 #container a {
   text-decoration: none;
 }
+
+capacitor-google-map, #map {
+  display: inline-block;
+  width: 100%;
+  height: 400px;
+}
+
+ion-content, ion-header, ion-toolbar, ion-title {
+  --background: transparent;
+
+}
+
+#map {
+  position: relative;
+  z-index: 1;
+}

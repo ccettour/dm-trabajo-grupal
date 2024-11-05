@@ -12,6 +12,8 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { PerfilService } from 'src/app/services/perfil/perfil.service'; // Servicio para interactuar con Firestore
 import { LoadingController } from '@ionic/angular';
+import axios from "axios";
+import {environment} from "../../../environments/environment";
 
 @Component({
   selector: 'app-perfil',
@@ -135,20 +137,18 @@ export class PerfilPage implements OnInit {
     });
     await actionSheet.present();
 }
-async openCameraRoll() {
-  try {
-    const images = await Camera.pickImages({
-      quality: 100,
-      limit: 1,
-    });
-    if (images.photos.length > 0){
-      this.avatarUrl = images.photos[0].webPath;
+
+  async openCameraRoll() {
+    try {
+      const images = await Camera.pickImages({ quality: 100, limit: 1 });
+      if (images.photos.length > 0) {
+        await this.subirFotoACloudinary(images.photos[0].webPath!);
+      }
+    } catch (e) {
+      console.log(e);
     }
-  } catch (e) {
-    console.log(e)
   }
 
-}
   async openCamera() {
     try {
       const image = await Camera.getPhoto({
@@ -156,12 +156,44 @@ async openCameraRoll() {
         resultType: CameraResultType.Uri,
         source: CameraSource.Camera
       });
-      if (image?.webPath) {
-        this.avatarUrl = image.webPath;
+      if (image.webPath) {
+        await this.subirFotoACloudinary(image.webPath);
       }
-      console.log(this.images)
     } catch (e) {
-      console.log(e)
+      console.log(e);
+    }
+  }
+
+  async subirFotoACloudinary(imageUri: string) {
+    const loading = await this.loadingController.create({
+      message: 'Subiendo imagen...',
+    });
+    await loading.present();
+
+    try {
+      const response = await fetch(imageUri);
+      const blob = await response.blob();
+      const formData = new FormData();
+
+      formData.append('file', blob, 'profile-image.jpg');
+      formData.append('upload_preset', environment.cloudinary.uploadPreset);
+
+      const cloudinaryResponse = await axios.post(
+        `https://api.cloudinary.com/v1_1/${environment.cloudinary.cloudName}/image/upload`,
+        formData
+      );
+
+      this.avatarUrl = cloudinaryResponse.data.secure_url;
+
+      // Guarda el enlace en el usuario en Firestore:
+      if (this.userId) {
+        await this.perfilService.actualizarPerfil(this.userId, { avatarUrl: this.avatarUrl });
+        await this.toastMessage("Imagen subida y perfil actualizado", "success");
+      }
+    } catch (error: any) {
+      await this.toastMessage(`Error al subir imagen`, 'danger');
+    } finally {
+      await loading.dismiss();
     }
   }
 
