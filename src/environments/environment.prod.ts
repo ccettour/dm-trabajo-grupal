@@ -7,5 +7,10 @@ export const environment = {
     storageBucket: "tpintegrador-a14d3.appspot.com",
     messagingSenderId: "804715829569",
     appId: "1:804715829569:web:364c3e3e16032a709a69c0",
-  }
+  },
+  cloudinary: {
+    cloudName: "dnacusmlq",
+    uploadPreset: "pf-img"
+  },
+  googleMapsKey: "AIzaSyDO43RZhZjZv_5ulIqRRe7FYzCZS0gTGE8",
 };

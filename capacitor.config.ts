@@ -8,6 +8,9 @@ const config: CapacitorConfig = {
     FirebaseAuthentication: {
       skipNativeAuth: false,
       providers: [],
+    },
+    CapacitorGoogleMaps: {
+      apiKey: "AIzaSyDO43RZhZjZv_5ulIqRRe7FYzCZS0gTGE8"
     }
   }
 };
