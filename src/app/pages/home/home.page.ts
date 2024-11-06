@@ -24,9 +24,9 @@ import {
 } from '@ionic/angular/standalone';
 import {Router, RouterLink} from "@angular/router";
 import {AuthService} from "../../services/auth/auth.service";
-import {GoogleMap} from "@capacitor/google-maps";
+import {GoogleMap, Polyline} from "@capacitor/google-maps";
 import {environment} from "../../../environments/environment";
-import {Geolocation} from "@capacitor/geolocation";
+import {Geolocation, Position} from "@capacitor/geolocation";
 
 @Component({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -44,6 +44,10 @@ export class HomePage{
   @ViewChild('map') mapRef: ElementRef<HTMLElement>;
   // @ts-ignore
   map: GoogleMap;
+  estaGrabando: boolean = false;
+  path: any[] = [];
+  distanciaTotal: number = 0;
+  watchId!: string;
 
   constructor(
     private router: Router,
@@ -91,6 +95,76 @@ export class HomePage{
 
     await this.map.enableCurrentLocation(true);
   }
+
+  async iniciarRecorrido() {
+    if (this.estaGrabando) return;
+    
+    this.estaGrabando = true;
+    this.path = []; // Resetea el recorrido
+    this.distanciaTotal = 0;
+
+    this.watchId = await Geolocation.watchPosition(
+      { enableHighAccuracy: true },
+      (posicion, err) => {
+        if (posicion){
+          this.actualizarPosicion(posicion);
+          this.addPolylines()
+        } 
+
+      }
+    );
+  }
+
+async pararRecorrido() {
+    if (!this.estaGrabando) return;
+    
+    this.estaGrabando = false;
+    Geolocation.clearWatch({ id: this.watchId });
+    
+    await this.toastMessage(`Distancia total: ${this.distanciaTotal.toFixed(2)} km`, 'success');
+  }
+  
+  async actualizarPosicion(posicion: Position) {
+    const { latitude, longitude } = posicion.coords;
+    const newPoint = { lat: latitude, lng: longitude };
+    
+    // Añade el nuevo punto a la ruta
+    if (this.path.length > 0) {
+        const lastPoint = this.path[this.path.length - 1];
+        this.distanciaTotal += this.calcularDistancia(lastPoint, newPoint);
+    }
+    this.path.push(newPoint);
+
+}
+async addPolylines(){
+  const lineas: Polyline[] = [{
+    path:this.path,
+    strokeColor: '#FF0000',
+    strokeWeight: 5,
+    geodesic: true,
+  }];
+  const resultado = await this.map.addPolylines(lineas);
+}
+
+  // Calcula la distancia entre dos puntos usando la fórmula Haversine
+  calcularDistancia(start: { lat: number; lng: number; }, end: { lat: any; lng: any; }) {
+    const R = 6371; // Radio de la tierra en km
+    const dLat = this.deg2rad(end.lat - start.lat);
+    const dLon = this.deg2rad(end.lng - start.lng);
+    const a = 
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.deg2rad(start.lat)) * Math.cos(this.deg2rad(end.lat)) * 
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distancia en km
+  }
+
+  deg2rad(deg: number) {
+    return deg * (Math.PI / 180);
+  }
+
+
+
 
   async evaluarPermisos(){
     const permisos = await Geolocation.checkPermissions();

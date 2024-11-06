@@ -26,6 +26,18 @@
     <div id="container">
 
       <capacitor-google-map #map></capacitor-google-map>
+<!-- Botones flotantes dentro del área del mapa -->
+<ion-fab vertical="bottom" horizontal="end" slot="fixed" edge>
+  <ion-fab-button color="success" (click)="iniciarRecorrido()">
+    <ion-icon name="play-outline"></ion-icon>
+  </ion-fab-button>
+  <ion-fab-button color="danger" (click)="pararRecorrido()">
+    <ion-icon name="stop-outline"></ion-icon>
+  </ion-fab-button>
+  
+</ion-fab>
+
+
 
       <ion-card>
         <ion-card-header>
