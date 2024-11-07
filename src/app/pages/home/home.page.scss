@@ -21,6 +21,12 @@
   text-decoration: none;
 }
 
+#container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 capacitor-google-map, #map {
   display: inline-block;
   width: 100%;
@@ -35,4 +41,25 @@ ion-content, ion-header, ion-toolbar, ion-title {
 #map {
   position: relative;
   z-index: 1;
+  width: 100%;
+  height: calc(100% - 56px); // Deja espacio para el footer
+  top: 0;
+  left: 0;
+  flex: 1;
+ 
 }
+
+ion-fab-button {
+  --ion-color-success: #4CAF50;
+  --ion-color-danger: #F44336;
+  font-size: 50px;
+  margin-bottom: 10px;
+}
+
+ion-fab {
+  position: absolute;
+  bottom: 380px;
+  right: 15px;
+  z-index: 2; /* Asegura que esté sobre el mapa */
+}
+
