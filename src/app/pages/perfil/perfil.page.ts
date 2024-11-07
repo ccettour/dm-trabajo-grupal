@@ -37,6 +37,7 @@ export class PerfilPage implements OnInit {
   });
 
   userId: string | undefined;
+  imc: string = "Ingresa peso y estatura para obtener este dato";
 
   constructor(
     private router: Router,
@@ -60,9 +61,20 @@ export class PerfilPage implements OnInit {
 
         // Se cargan los datos desde Firestore
         const userProfile = await this.perfilService.obtenerDatosPerfil(this.userId);
-        if (userProfile) {
+
+         if (userProfile) {
+        //   //IMC
+        //   const estatura:number= (userProfile.estatura)/100;
+        //   const peso: number= userProfile.peso;
+        //
+        //   if(estatura > 0 && peso > 0){
+        //     this.imc = peso / (estatura * estatura);
+        //   }
+
           this.profileForm.patchValue({
             nombre: userProfile.nombre,
+            // estatura: estatura*100,
+            // peso: peso,
             estatura: userProfile.estatura,
             peso: userProfile.peso,
             email: userProfile.email,
@@ -91,6 +103,17 @@ export class PerfilPage implements OnInit {
         peso: this.profileForm.value.peso,
         avatarUrl: this.avatarUrl
       };
+
+        //IMC
+        const estatura:number= (profileData.estatura.valueOf())/100;
+        const peso: number= profileData.peso.valueOf();
+
+        if(estatura > 0 && peso > 0){
+          const calculoImc: number = peso / (estatura * estatura);
+          this.imc = calculoImc.toFixed(2);
+        } else {
+          this.imc = "Ingresa peso y estatura para obtener este dato";
+        }
 
       try {
         await this.perfilService.actualizarPerfil(this.userId, profileData);
