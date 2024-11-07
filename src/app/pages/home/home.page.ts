@@ -27,6 +27,10 @@ import {AuthService} from "../../services/auth/auth.service";
 import {GoogleMap, Polyline} from "@capacitor/google-maps";
 import {environment} from "../../../environments/environment";
 import {Geolocation, Position} from "@capacitor/geolocation";
+import { addIcons } from 'ionicons';
+import { playOutline, stopOutline } from 'ionicons/icons';
+import { PerfilService } from 'src/app/services/perfil/perfil.service';
+import { User } from 'firebase/auth';
 
 @Component({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -43,18 +47,38 @@ export class HomePage{
 // @ts-ignore
   @ViewChild('map') mapRef: ElementRef<HTMLElement>;
   // @ts-ignore
-  map: GoogleMap;
+  map: GoogleMap|null;
   estaGrabando: boolean = false;
   path: any[] = [];
+  lineas: Polyline [] = [];
   distanciaTotal: number = 0;
   watchId!: string;
+  peso:number = 0;
+  estatura:number = 0;
+  duracionRecorrido: number = 0;
+  caloriasQuemadas: number = 0;
+  inicioRecorrido: Date|undefined;
 
   constructor(
     private router: Router,
     private platform: Platform,
     private authService: AuthService,
     private toastController: ToastController,
+    private perfilService: PerfilService,
   ) {
+    addIcons({playOutline,stopOutline});
+  }
+
+  async obtenerParametros(){
+    this.authService.getDatosUsuario().subscribe(async (usuario:User | null) => {
+      if (usuario){
+        const perfil = await this.perfilService.obtenerDatosPerfil(usuario.uid);
+        if(perfil){
+          this.peso = perfil.peso;
+          this.estatura = perfil.estatura;
+        }
+      }
+    })
   }
 
   ionViewDidEnter() {
@@ -64,66 +88,95 @@ export class HomePage{
     });
 
     this.initMaps();
+    this.obtenerParametros();
   }
 
   /*MAPS*/
 
-  async initMaps(){
+  async destruirMapa() {
+    if (this.map) {
+      await this.map.destroy();
+      this.map = null; 
+    }
+  }
+  async initMaps() {
     const tienePermisos = await this.evaluarPermisos();
-    if(!tienePermisos){
-      await this.toastMessage("No tiene permisos para mostrar el mapa","danger");
+    if (!tienePermisos) {
+      await this.toastMessage("No tiene permisos para mostrar el mapa", "danger");
       return;
     }
-    if(!this.mapRef){
+    if (!this.mapRef) {
       await this.toastMessage("Error al cargar el mapa", "danger");
       return;
     }
-    const ubicacion = await Geolocation.getCurrentPosition({enableHighAccuracy: true});
-    const {coords: {latitude, longitude}} = ubicacion;
+  
+    // Obtener ubicación actual
+    const ubicacion = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
+    const { coords: { latitude, longitude } } = ubicacion;
+  
+    // Crear un nuevo mapa
     this.map = await GoogleMap.create({
       id: 'map',
       element: this.mapRef.nativeElement,
       apiKey: environment.googleMapsKey,
       config: {
-        center: {
-          lat: latitude,
-          lng: longitude,
-        },
+        center: { lat: latitude, lng: longitude },
         zoom: 16,
-      }
+      },
     });
-
+  
+    // Habilitar la localización del usuario
     await this.map.enableCurrentLocation(true);
   }
-
+    
   async iniciarRecorrido() {
     if (this.estaGrabando) return;
-    
+  
     this.estaGrabando = true;
-    this.path = []; // Resetea el recorrido
+  
+    // Limpiar el recorrido anterior
+    await this.destruirMapa();
+    await this.initMaps();
+  
+    // Reseteo de valores
+    this.path = [];
     this.distanciaTotal = 0;
-
+    this.caloriasQuemadas = 0;
+    this.inicioRecorrido = new Date();
+  
+    await this.toastMessage("Recorrido iniciado", "success");
+  
     this.watchId = await Geolocation.watchPosition(
       { enableHighAccuracy: true },
       (posicion, err) => {
-        if (posicion){
+        if (posicion) {
           this.actualizarPosicion(posicion);
-          this.addPolylines()
-        } 
-
+          this.addPolylines();
+        }
       }
     );
   }
+  
 
 async pararRecorrido() {
     if (!this.estaGrabando) return;
     
     this.estaGrabando = false;
     Geolocation.clearWatch({ id: this.watchId });
-    
-    await this.toastMessage(`Distancia total: ${this.distanciaTotal.toFixed(2)} km`, 'success');
+
+    if( this.inicioRecorrido){
+      const finRecorrido = new Date();
+      this.duracionRecorrido = (finRecorrido.getTime() - this.inicioRecorrido.getTime()) / 1000 /60 ;
+    }
+    this.calcularCalorias();
+    await this.toastMessage("Recorrido Finalizado","success" ); 
   }
   
+  async calcularCalorias(){
+    const calorias = 0.029*(this.peso* 2.2)* this.duracionRecorrido;
+  this.caloriasQuemadas = calorias;
+  }
+
   async actualizarPosicion(posicion: Position) {
     const { latitude, longitude } = posicion.coords;
     const newPoint = { lat: latitude, lng: longitude };
@@ -134,16 +187,18 @@ async pararRecorrido() {
         this.distanciaTotal += this.calcularDistancia(lastPoint, newPoint);
     }
     this.path.push(newPoint);
-
 }
+
 async addPolylines(){
-  const lineas: Polyline[] = [{
+  this.lineas = [{
     path:this.path,
-    strokeColor: '#FF0000',
+    strokeColor: '#009B77',
     strokeWeight: 5,
     geodesic: true,
   }];
-  const resultado = await this.map.addPolylines(lineas);
+  if (this.map){
+    const resultado = await this.map.addPolylines(this.lineas);
+  }
 }
 
   // Calcula la distancia entre dos puntos usando la fórmula Haversine
@@ -163,9 +218,6 @@ async addPolylines(){
     return deg * (Math.PI / 180);
   }
 
-
-
-
   async evaluarPermisos(){
     const permisos = await Geolocation.checkPermissions();
     return permisos.location === 'granted' && permisos.coarseLocation === 'granted';
@@ -184,7 +236,7 @@ async addPolylines(){
     await this.router.navigate(['/login']);
   }
 
-  async toastMessage(contenido: string, color: string) {
+  async toastMessage(contenido: string, color: "success" | "danger") {
     const mensaje = await this.toastController.create({
       message: contenido,
       color: color,

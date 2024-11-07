@@ -47,12 +47,15 @@
           <ion-list>
             <ion-item>
               <ion-title>Kms. recorridos</ion-title>
-              <ion-label>2.5</ion-label>
+              <ion-label>{{distanciaTotal.toFixed(2)}}</ion-label>
             </ion-item>
-
             <ion-item>
               <ion-title>Calorías quemadas</ion-title>
-              <ion-label>132</ion-label>
+              <ion-label>{{caloriasQuemadas.toFixed(2)}} </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-title>Duracion del recorrido</ion-title>
+              <ion-label>{{caloriasQuemadas.toFixed(0)}} </ion-label>
             </ion-item>
           </ion-list>
         </ion-card-content>
