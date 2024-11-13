@@ -1,0 +1,55 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start" (click)="goBack()">
+      <ion-icon size="large" name="arrow-back-outline"></ion-icon>
+    </ion-buttons>
+    <ion-title>Mis estadísticas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">estadisticas</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content>
+    <ion-card color="primary"  [ngStyle]="{'border': nuevoRecordDistancia ? '5px solid gold' : 'none'}">
+      <ion-card-header>
+        <ion-card-title>Mayor distancia recorrida</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content [ngStyle]="{
+    'color': nuevoRecordDistancia ? 'gold' : 'white',
+    'font-weight': nuevoRecordDistancia ? 'bold' : 'normal'
+  }"> {{ mayorDistancia | number: '1.2-2' }} Kms
+      </ion-card-content>
+    </ion-card>
+
+
+    <ion-card color="secondary"  [ngStyle]="{'border': nuevoRecordTiempo ? '5px solid gold' : 'none'}">
+      <ion-card-header>
+        <ion-card-title>Menor tiempo promedio</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content [ngStyle]="{
+    'color': nuevoRecordTiempo ? 'gold' : 'black',
+    'font-weight': nuevoRecordTiempo ? 'bold' : 'normal'
+  }"> {{ calculo.formatearDuracion(menorTiempoProm) }}
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card color="tertiary" [ngStyle]="{'border': nuevoRecordDuracion ? '5px solid gold' : 'none'}">
+      <ion-card-header>
+        <ion-card-title>Mayor duración</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content [ngStyle]="{
+    'color': nuevoRecordDuracion ? 'gold' : 'white',
+    'font-weight': nuevoRecordDuracion ? 'bold' : 'normal'
+  }"> {{ calculo.formatearDuracion(mayorDuracion) }}
+      </ion-card-content>
+    </ion-card>
+  </ion-content>
+</ion-content>
