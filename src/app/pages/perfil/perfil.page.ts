@@ -63,18 +63,19 @@ export class PerfilPage implements OnInit {
         const userProfile = await this.perfilService.obtenerDatosPerfil(this.userId);
 
          if (userProfile) {
-        //   //IMC
-        //   const estatura:number= (userProfile.estatura)/100;
-        //   const peso: number= userProfile.peso;
-        //
-        //   if(estatura > 0 && peso > 0){
-        //     this.imc = peso / (estatura * estatura);
-        //   }
+          //IMC
+          const estatura:number= (userProfile.estatura)/100;
+          const peso: number= userProfile.peso;
+
+           if(estatura > 0 && peso > 0){
+             const calculoImc: number = peso / (estatura * estatura);
+             this.imc = calculoImc.toFixed(2);
+           } else {
+             this.imc = "Ingresa peso y estatura para obtener este dato";
+           }
 
           this.profileForm.patchValue({
             nombre: userProfile.nombre,
-            // estatura: estatura*100,
-            // peso: peso,
             estatura: userProfile.estatura,
             peso: userProfile.peso,
             email: userProfile.email,
@@ -105,15 +106,15 @@ export class PerfilPage implements OnInit {
       };
 
         //IMC
-        const estatura:number= (profileData.estatura.valueOf())/100;
-        const peso: number= profileData.peso.valueOf();
-
-        if(estatura > 0 && peso > 0){
-          const calculoImc: number = peso / (estatura * estatura);
-          this.imc = calculoImc.toFixed(2);
-        } else {
-          this.imc = "Ingresa peso y estatura para obtener este dato";
-        }
+        // const estatura:number= (profileData.estatura.valueOf())/100;
+        // const peso: number= profileData.peso.valueOf();
+        //
+        // if(estatura > 0 && peso > 0){
+        //   const calculoImc: number = peso / (estatura * estatura);
+        //   this.imc = calculoImc.toFixed(2);
+        // } else {
+        //   this.imc = "Ingresa peso y estatura para obtener este dato";
+        // }
 
       try {
         await this.perfilService.actualizarPerfil(this.userId, profileData);

@@ -6,9 +6,11 @@
   </ion-header>
   <ion-content>
     <ion-button expand="block" routerLink="/perfil">Perfil</ion-button>
+    <ion-button expand="block" routerLink="/historial">Historial</ion-button>
+    <ion-button expand="block" routerLink="/estadisticas">Estadísticas</ion-button>
   </ion-content>
   <ion-footer>
-    <ion-button expand="block" fill="clear" (click)="salir()">Cerrar sesión</ion-button>
+    <ion-button expand="block" fill="clear" (click)="confirmarCierre()">Cerrar sesión</ion-button>
   </ion-footer>
 </ion-menu>
 
@@ -21,23 +23,18 @@
       <ion-title> caminApp</ion-title>
     </ion-toolbar>
   </ion-header>
+
   <ion-content>
-
     <div id="container">
-
       <capacitor-google-map #map></capacitor-google-map>
-<!-- Botones flotantes dentro del área del mapa -->
-<ion-fab vertical="bottom" horizontal="end" slot="fixed" edge>
-  <ion-fab-button color="success" (click)="iniciarRecorrido()">
-    <ion-icon name="play-outline"></ion-icon>
-  </ion-fab-button>
-  <ion-fab-button color="danger" (click)="pararRecorrido()">
-    <ion-icon name="stop-outline"></ion-icon>
-  </ion-fab-button>
-  
-</ion-fab>
-
-
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed" edge>
+        <ion-fab-button [disabled]="estaGrabando" color="success" (click)="iniciarRecorrido()">
+          <ion-icon name="play-outline"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-button [disabled]="!estaGrabando" color="danger" (click)="pararRecorrido()">
+          <ion-icon name="stop-outline"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
 
       <ion-card>
         <ion-card-header>
@@ -47,22 +44,26 @@
           <ion-list>
             <ion-item>
               <ion-title>Kms. recorridos</ion-title>
-              <ion-label>{{distanciaTotal.toFixed(2)}}</ion-label>
-            </ion-item>
-            <ion-item>
-              <ion-title>Calorías quemadas</ion-title>
-              <ion-label>{{caloriasQuemadas.toFixed(2)}} </ion-label>
+              <ion-label>{{ distanciaTotal.toFixed(2) }}</ion-label>
             </ion-item>
             <ion-item>
               <ion-title>Duracion del recorrido</ion-title>
-              <ion-label>{{caloriasQuemadas.toFixed(0)}} </ion-label>
+              <ion-label>{{ calculo.formatearDuracion(duracionRecorrido) }}</ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-title>Velocidad promedio</ion-title>
+              <ion-label>{{ kmxh.toFixed(2) }} km/h</ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-title>Calorías quemadas</ion-title>
+              <ion-label>{{ caloriasQuemadas.toFixed(2) }}</ion-label>
             </ion-item>
           </ion-list>
         </ion-card-content>
       </ion-card>
-
-
+      <ion-button (click)="compartir()" [disabled]="!puedeCompartir">
+        <ion-icon name="share-social-outline"></ion-icon>
+      </ion-button>
     </div>
-
   </ion-content>
 </ion-content>

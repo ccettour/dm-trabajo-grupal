@@ -1,0 +1,31 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Mi historial</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">historial</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+      <ion-card  *ngFor="let recorrido of historialRecorridos.slice().reverse()">
+        <ion-card-header>
+          <ion-card-title>{{recorrido.id  | date:'dd/MM/yyyy - HH:mm'}}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div>
+            <p>Distancia Total: {{ recorrido.distanciaTotal  | number:'1.2-2' }} km</p>
+            <p>Velocidad Media: {{ recorrido.kmxh  | number:'1.2-2' }} km/h</p>
+            <p>Duración: {{ calculo.formatearDuracion(recorrido.duracion)}}</p>
+          </div>
+          <ion-button color="danger" (click)="confirmarBorrado(recorrido.id)"><ion-icon name="trash-outline"></ion-icon></ion-button>
+        </ion-card-content>
+      </ion-card>
+  </ion-content>
+</ion-content>

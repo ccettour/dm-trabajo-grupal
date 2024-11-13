@@ -22,4 +22,13 @@ export const routes: Routes = [
     path: 'perfil',
     loadComponent: () => import('./pages/perfil/perfil.page').then(m => m.PerfilPage)
   },
+  {
+    path: 'estadisticas',
+    loadComponent: () => import('./pages/estadisticas/estadisticas.page').then(m => m.EstadisticasPage)
+  },  {
+    path: 'historial',
+    loadComponent: () => import('./pages/historial/historial.page').then( m => m.HistorialPage)
+  },
+
+
 ];
